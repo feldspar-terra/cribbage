@@ -83,24 +83,35 @@ def calculate_cribbage_score(hand, turn_card):
 
 def calculate_runs(all_cards, breakdown):
     """Calculate the total points for runs in the hand."""
-    sorted_cards = sorted(all_cards, key=lambda x: card_value(x))  # Sort cards by their numeric value
+    # Convert cards to their numeric values for sorting
+    value_map = {'A': 1, 'T': 10, 'J': 11, 'Q': 12, 'K': 13}
+    def get_sort_value(card):
+        return value_map.get(card[0], int(card[0]))
+    
+    sorted_cards = sorted(all_cards, key=get_sort_value)
     run_points = 0
-    seen_runs = set()
-
-    # Find all possible runs
-    for i in range(len(sorted_cards)):
-        for j in range(i + 3, len(sorted_cards) + 1):  # Runs need to have at least 3 cards
-            run = sorted_cards[i:j]
-            run_values = [card_value(card) for card in run]
-            run_suits = [card[-1] for card in run]
-
-            # Check if the run is a valid consecutive sequence and has at least 3 unique cards
-            if len(set(run_values)) == len(run_values) and max(run_values) - min(run_values) == len(run_values) - 1:
-                run_tuple = tuple(sorted(run))  # Create a tuple to store in seen_runs (to avoid counting duplicates)
-                if run_tuple not in seen_runs:
-                    seen_runs.add(run_tuple)
-                    run_points += len(run_values)  # Add points for the run (points = length of the run)
-                    breakdown["runs"].append([card for card in run])
+    
+    # For each possible length
+    for length in range(5, 2, -1):
+        runs_found = []
+        
+        # Check each possible subset of cards
+        for subset in combinations(sorted_cards, length):
+            subset = list(sorted(subset, key=get_sort_value))
+            subset_values = [get_sort_value(card) for card in subset]
+            
+            # Check if it forms a run (consecutive numbers)
+            if (max(subset_values) - min(subset_values) == length - 1 and
+                all(n in subset_values for n in range(min(subset_values), max(subset_values) + 1))):
+                runs_found.append(subset)
+        
+        # If we found runs of this length
+        if runs_found:
+            # Add each run to the breakdown and count points
+            for run in runs_found:
+                breakdown["runs"].append(list(run))
+                run_points += length  # Add points for each run found
+            return run_points  # Return after finding all runs of the longest length
     
     return run_points
 
