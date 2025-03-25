@@ -61,7 +61,7 @@ document.getElementById('score-btn').addEventListener('click', async () => {
   document.getElementById('score').innerText = result.error || `Score: ${result.score}`;
 
   if (result.breakdown) {
-    console.log(result.breakdown); // Log breakdown for debugging
+    console.log(result.breakdown);
     displayScoreBreakdown(result.breakdown);
   } else {
     console.log("No breakdown received");
@@ -72,11 +72,19 @@ function displayScoreBreakdown(breakdown) {
   const breakdownDiv = document.getElementById('score-breakdown');
   breakdownDiv.innerHTML = '<h3>Score Breakdown:</h3>';
 
+  function createCardImages(cards) {
+    return cards.map(card => 
+      `<img src="https://deckofcardsapi.com/static/img/${card}.png" 
+           alt="${card}" 
+           style="width: 50px; height: 70px; margin: 2px;">`
+    ).join('');
+  }
+
   // Display 15s breakdown
   if (breakdown['15s'] && breakdown['15s'].length > 0) {
     let fifteensHTML = '<h4>15s:</h4><ul>';
     breakdown['15s'].forEach(combo => {
-      fifteensHTML += `<li>${combo.join(', ')}: 2 points</li>`;
+      fifteensHTML += `<li>${createCardImages(combo)} = 2 points</li>`;
     });
     fifteensHTML += '</ul>';
     breakdownDiv.innerHTML += fifteensHTML;
@@ -86,7 +94,7 @@ function displayScoreBreakdown(breakdown) {
   if (breakdown['pairs'] && breakdown['pairs'].length > 0) {
     let pairsHTML = '<h4>Pairs:</h4><ul>';
     breakdown['pairs'].forEach(pair => {
-      pairsHTML += `<li>${pair.join(', ')}: 2 points</li>`;
+      pairsHTML += `<li>${createCardImages(pair)} = 2 points</li>`;
     });
     pairsHTML += '</ul>';
     breakdownDiv.innerHTML += pairsHTML;
@@ -96,7 +104,7 @@ function displayScoreBreakdown(breakdown) {
   if (breakdown['runs'] && breakdown['runs'].length > 0) {
     let runsHTML = '<h4>Runs:</h4><ul>';
     breakdown['runs'].forEach(run => {
-      runsHTML += `<li>${run.join(', ')}: ${run.length} points</li>`;
+      runsHTML += `<li>${createCardImages(run)} = ${run.length} points</li>`;
     });
     runsHTML += '</ul>';
     breakdownDiv.innerHTML += runsHTML;
@@ -106,7 +114,7 @@ function displayScoreBreakdown(breakdown) {
   if (breakdown['flushes'] && breakdown['flushes'].length > 0) {
     let flushesHTML = '<h4>Flushes:</h4><ul>';
     breakdown['flushes'].forEach(flush => {
-      flushesHTML += `<li>${flush.join(', ')}: ${flush.length === 5 ? 5 : 4} points</li>`;
+      flushesHTML += `<li>${createCardImages(flush)} = ${flush.length === 5 ? 5 : 4} points</li>`;
     });
     flushesHTML += '</ul>';
     breakdownDiv.innerHTML += flushesHTML;
@@ -116,7 +124,7 @@ function displayScoreBreakdown(breakdown) {
   if (breakdown['his_nobs'] && breakdown['his_nobs'].length > 0) {
     let hisNobsHTML = '<h4>His Nobs:</h4><ul>';
     breakdown['his_nobs'].forEach(jack => {
-      hisNobsHTML += `<li>${jack}: 1 point</li>`;
+      hisNobsHTML += `<li>${createCardImages([jack])} = 1 point</li>`;
     });
     hisNobsHTML += '</ul>';
     breakdownDiv.innerHTML += hisNobsHTML;
