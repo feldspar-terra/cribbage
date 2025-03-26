@@ -28,6 +28,26 @@ document.getElementById('draw-deck').addEventListener('click', () => {
 });
 
 function selectCard(card) {
+  // Check if card is already in hand
+  const handIndex = hand.indexOf(card.code);
+  if (handIndex !== -1) {
+    // Remove from hand
+    hand.splice(handIndex, 1);
+    document.getElementById('hand').removeChild(
+      Array.from(document.getElementById('hand').children)
+        .find(img => img.src === card.image)
+    );
+    return;
+  }
+
+  // Check if card is the turn card
+  if (turnCard === card.code) {
+    turnCard = null;
+    document.getElementById('turn-card').innerHTML = '';
+    return;
+  }
+
+  // Add card if possible
   if (hand.length < 4) {
     hand.push(card.code);
     displayCard(card, 'hand');
