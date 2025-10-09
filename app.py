@@ -66,12 +66,17 @@ def calculate_cribbage_score(hand, turn_card):
     total_score += run_points
 
     # Scoring for flushes
-    if suits.count(suits[0]) == 5:
+    hand_suits = suits[:4]  # First 4 cards are the hand
+    turn_suit = suits[4]    # Last card is the turn card
+    
+    # Check for 5-card flush (all 5 cards same suit)
+    if len(set(suits)) == 1:
         total_score += 5
         breakdown["flushes"].append(all_cards)
-    elif suits.count(suits[0]) == 4 and suits[-1] != suits[0]:
+    # Check for 4-card hand flush (all 4 hand cards same suit)
+    elif len(set(hand_suits)) == 1:
         total_score += 4
-        breakdown["flushes"].append(all_cards)
+        breakdown["flushes"].append(hand)
 
     # His Nobs (Jack matching the turn card suit)
     for card in hand:
@@ -86,7 +91,11 @@ def calculate_runs(all_cards, breakdown):
     # Convert cards to their numeric values for sorting
     value_map = {'A': 1, 'T': 10, 'J': 11, 'Q': 12, 'K': 13}
     def get_sort_value(card):
-        return value_map.get(card[0], int(card[0]))
+        card_value = card[0]
+        if card_value in value_map:
+            return value_map[card_value]
+        else:
+            return int(card_value)
     
     sorted_cards = sorted(all_cards, key=get_sort_value)
     run_points = 0
@@ -136,4 +145,4 @@ def score_hand():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8009, debug=False)

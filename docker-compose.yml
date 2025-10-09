@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  cribbage:
+    build: .
+    ports:
+      - "8009:8009"
+    environment:
+      - FLASK_ENV=production
+    restart: unless-stopped
+    container_name: cribbage-app
